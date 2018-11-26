@@ -81,6 +81,23 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>localDM</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<distributionManagement>
+				<repository>
+					<id>apple-releases</id>
+					<url>http://nexus.appleframework.com:8081/nexus/content/repositories/releases/</url>
+				</repository>
+				<snapshotRepository>
+					<id>apple-snapshots</id>
+					<url>http://nexus.appleframework.com:8081/nexus/content/repositories/snapshots/</url>
+				</snapshotRepository>
+			</distributionManagement>
+			 
+		</profile>
 	</profiles>
 	<properties>
 		<!-- Common libs -->
