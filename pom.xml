@@ -81,24 +81,19 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
-			<id>localDM</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<distributionManagement>
-				<repository>
-					<id>apple-releases</id>
-					<url>http://nexus.appleframework.com:8081/nexus/content/repositories/releases/</url>
-				</repository>
-				<snapshotRepository>
-					<id>apple-snapshots</id>
-					<url>http://nexus.appleframework.com:8081/nexus/content/repositories/snapshots/</url>
-				</snapshotRepository>
-			</distributionManagement>
-			 
-		</profile>
 	</profiles>
+
+	<distributionManagement>
+		<repository>
+			<id>apple-releases</id>
+			<url>http://nexus.appleframework.com:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>apple-snapshots</id>
+			<url>http://nexus.appleframework.com:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+			
 	<properties>
 		<!-- Common libs -->
 		<spring.bom.version>3.2.9.RELEASE</spring.bom.version>
