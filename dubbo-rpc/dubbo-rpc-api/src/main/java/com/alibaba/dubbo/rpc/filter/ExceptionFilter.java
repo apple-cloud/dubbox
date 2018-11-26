@@ -16,6 +16,8 @@
 package com.alibaba.dubbo.rpc.filter;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
@@ -59,7 +61,7 @@ public class ExceptionFilter implements Filter {
         this.logger = logger;
     }
     
-    private String exceptionClazz;
+    private Set<String> exceptionClassSet;
     
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
@@ -77,10 +79,13 @@ public class ExceptionFilter implements Filter {
 					Class<?> clazz = exception.getClass();
 					Class<?> superClazz = clazz.getSuperclass();
 
-					String exceptionClazz = getExceptionClazz();
-					if (clazz.getName().startsWith(exceptionClazz) || superClazz.getName().startsWith(exceptionClazz)) {
-						return result;
+					Set<String> exceptionClazzSet = getExceptionClassSet();
+					if(null != exceptionClazzSet) {
+						if (exceptionClazzSet.contains(clazz.getName()) || exceptionClazzSet.contains(superClazz.getName())) {
+							return result;
+						}
 					}
+					
                     // 在方法签名上有声明，直接抛出
                     try {
                         Method method = invoker.getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
@@ -133,12 +138,16 @@ public class ExceptionFilter implements Filter {
         }
     }
     
-	public String getExceptionClazz() {
-		if (null != exceptionClazz) {
-			return exceptionClazz;
+	public Set<String> getExceptionClassSet() {
+		if(null == exceptionClassSet) {
+			String exceptionClasses = System.getProperty("service.exception", "com.appleframework.exception.AppleException");
+			String[] exceptionClassArray = exceptionClasses.split(",");
+			exceptionClassSet = new HashSet<String>();
+			for (String exceptionClass : exceptionClassArray) {
+				exceptionClassSet.add(exceptionClass);
+			}
 		}
-		exceptionClazz = System.getProperty("service.exception", "com.appleframework.exception.AppleException");
-		return exceptionClazz;
+		return exceptionClassSet;
 	}
 
 }
