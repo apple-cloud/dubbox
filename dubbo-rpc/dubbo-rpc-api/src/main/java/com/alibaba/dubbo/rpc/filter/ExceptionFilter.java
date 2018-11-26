@@ -59,6 +59,8 @@ public class ExceptionFilter implements Filter {
         this.logger = logger;
     }
     
+    private String exceptionClazz;
+    
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
             Result result = invoker.invoke(invocation);
@@ -70,6 +72,15 @@ public class ExceptionFilter implements Filter {
                     if (! (exception instanceof RuntimeException) && (exception instanceof Exception)) {
                         return result;
                     }
+                    
+                    //针对继承RuntimeException的类dubbo不能扑捉的问题
+					Class<?> clazz = exception.getClass();
+					Class<?> superClazz = clazz.getSuperclass();
+
+					String exceptionClazz = getExceptionClazz();
+					if (clazz.getName().startsWith(exceptionClazz) || superClazz.getName().startsWith(exceptionClazz)) {
+						return result;
+					}
                     // 在方法签名上有声明，直接抛出
                     try {
                         Method method = invoker.getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
@@ -121,5 +132,13 @@ public class ExceptionFilter implements Filter {
             throw e;
         }
     }
+    
+	public String getExceptionClazz() {
+		if (null != exceptionClazz) {
+			return exceptionClazz;
+		}
+		exceptionClazz = System.getProperty("service.exception", "com.appleframework.exception.AppleException");
+		return exceptionClazz;
+	}
 
 }
